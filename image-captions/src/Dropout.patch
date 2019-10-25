@@ -1,0 +1,10 @@
+--- /home/s1985335/anaconda3/envs/caption_env/lib/python3.7/site-packages/torch/nn/modules/dropout.py
++++ /home/s1985335/anaconda3/envs/caption_env/lib/python3.7/site-packages/torch/nn/modules/dropout.py
+@@ -31,7 +31,6 @@
+         detectors: https://arxiv.org/abs/1207.0580
+     """
+ 
+-    @weak_script_method
+     def forward(self, input):
+         return F.dropout(input, self.p, self.training, self.inplace)
+ 

@@ -1,0 +1,10 @@
+--- /home/s1985335/anaconda3/envs/caption_env/lib/python3.7/site-packages/torch/nn/modules/rnn.py
++++ /home/s1985335/anaconda3/envs/caption_env/lib/python3.7/site-packages/torch/nn/modules/rnn.py
+@@ -62,7 +62,6 @@
+     def __init__(self, input_size, hidden_size, bias=True):
+         super(LSTMCell, self).__init__(input_size, hidden_size, bias, num_chunks=4)
+ 
+-    @weak_script_method
+     def forward(self, input, hx=None):
+         # type: (Tensor, Optional[Tuple[Tensor, Tensor]]) -> Tuple[Tensor, Tensor]
+         self.check_forward_input(input)

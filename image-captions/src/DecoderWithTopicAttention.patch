@@ -1,0 +1,55 @@
+--- /data1/s1985335/raid/IC-GAN/img_captions/image-captioning-bottom-up-top-down-master/models_newdictOTtopiccaption.py
++++ /data1/s1985335/raid/IC-GAN/img_captions/image-captioning-bottom-up-top-down-master/models_newdictOTtopiccaption.py
+@@ -27,12 +27,12 @@
+         self.match_attention = AlignmentAttention(features_dim, embed_dim,self.matchattn_dim)
+         self.embedding = nn.Embedding(vocab_size, embed_dim)  # embedding layer
+         self.dropout = nn.Dropout(p=self.dropout)
+-        # self.topic_attention = AttnTopicModel(features_dim, attention_dim, self.topic_dim)
+-        self.early_language_model = nn.LSTMCell(features_dim +self.embed_dim, decoder_dim,
++        self.topic_attention = AttnTopicModel(features_dim, attention_dim, self.topic_dim)
++        self.early_language_model = nn.LSTMCell(features_dim +self.embed_dim+self.topic_dim, decoder_dim,
+                                           bias=True)  # language model LSTMCell
+         self.late_language_model = nn.LSTMCell(self.embed_dim, decoder_dim,
+                                                 bias=True)  # language model LSTMCell
+-        self.fc = weight_norm(nn.Linear(decoder_dim+self.topic_dim, vocab_size))  # linear layer to find scores over vocabulary
++        self.fc = weight_norm(nn.Linear(decoder_dim, vocab_size))  # linear layer to find scores over vocabulary
+         self.fc2 = weight_norm(nn.Linear(decoder_dim+features_dim+self.topic_dim, vocab_size))
+         self.init_weights()  # initialize some layers with the uniform distribution
+ 
+@@ -115,8 +115,7 @@
+         # Create tensors to hold word predicion scores
+         predictions = torch.zeros(batch_size, max(decode_lengths), vocab_size).cuda() # .to(device)
+ 
+-        # topic_output = self.topic_attention(image_features)
+-        
++        topic_output = self.topic_attention(image_features)
+         # At each time-step, pass the language model's previous hidden state, the mean pooled bottom up features and
+         # word embeddings to the top down attention model. Then pass the hidden state of the top down model and the bottom up
+         # features to the attention block. The attention weighed bottom up features and hidden state of the top down attention model
+@@ -136,17 +135,13 @@
+                 for t in range(max(decode_lengths)):
+                     batch_size_t = sum([l > t for l in decode_lengths])
+                     matchattn_vis_input = self.match_attention(image_features[:batch_size_t],embeddings[:batch_size_t,t,:])
+-                    if(split=='TRAIN'):
+-                        append_topics = topics[:batch_size_t]
+-                    else:
+-                        append_topics = topics[:batch_size_t]
+                     h1, c1 = self.early_language_model(
+                         torch.cat(
+-                            [matchattn_vis_input[:batch_size_t], embeddings[:batch_size_t, t, :]],
++                            [matchattn_vis_input[:batch_size_t], topics[:batch_size_t], embeddings[:batch_size_t, t, :]],
+                             dim=1),
+                         (h1[:batch_size_t], c1[:batch_size_t]))
+ 
+-                    preds = self.fc(self.dropout(torch.cat([h1,append_topics],dim=1)))  # (batch_size_t, vocab_size)
++                    preds = self.fc(self.dropout(h1))  # (batch_size_t, vocab_size)
+                     predictions[:batch_size_t, t, :] = preds
+         else:
+             for t in range(max(decode_lengths)):
+@@ -158,5 +153,5 @@
+                 preds = self.fc2(self.dropout(h2))  # (batch_size_t, vocab_size)
+                 predictions[:batch_size_t, t, :] = preds
+ 
+-        return predictions, encoded_captions, decode_lengths, sort_ind, topics#,topic_output
++        return predictions, encoded_captions, decode_lengths, sort_ind, topics,topic_output
+ 

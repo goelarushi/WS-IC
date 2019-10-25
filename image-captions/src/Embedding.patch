@@ -1,0 +1,19 @@
+--- /home/s1985335/anaconda3/envs/caption_env/lib/python3.7/site-packages/torch/nn/modules/sparse.py
++++ /home/s1985335/anaconda3/envs/caption_env/lib/python3.7/site-packages/torch/nn/modules/sparse.py
+@@ -67,7 +67,7 @@
+                  [-0.1655,  0.9897,  0.0635]]])
+     """
+     __constants__ = ['num_embeddings', 'embedding_dim', 'padding_idx', 'max_norm',
+-                     'norm_type', 'scale_grad_by_freq', 'sparse', '_weight']
++                     'norm_type', 'scale_grad_by_freq', 'sparse']
+ 
+     def __init__(self, num_embeddings, embedding_dim, padding_idx=None,
+                  max_norm=None, norm_type=2., scale_grad_by_freq=False,
+@@ -100,7 +100,6 @@
+             with torch.no_grad():
+                 self.weight[self.padding_idx].fill_(0)
+ 
+-    @weak_script_method
+     def forward(self, input):
+         return F.embedding(
+             input, self.weight, self.padding_idx, self.max_norm,

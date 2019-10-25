@@ -1,0 +1,14 @@
+--- /data1/s1985335/raid/IC-GAN/img_captions/image-captioning-bottom-up-top-down-master/models_s2stranslation.py
++++ /data1/s1985335/raid/IC-GAN/img_captions/image-captioning-bottom-up-top-down-master/models_s2stranslation.py
+@@ -63,10 +63,8 @@
+         topv, topi = decoder_output.topk(1)
+     
+         decoder_input = topi.detach()  # detach from history as input
++        d_i_embedding = self.embedding(decoder_input).to(device)
+         
+-        d_i_embedding = self.embedding(decoder_input).to(device)
+-        # if decoder_input.item() == word_map['<eos>']:
+-        #     break
+         return d_i_embedding.squeeze(1)
+ 
+ 

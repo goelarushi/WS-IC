@@ -1,0 +1,22 @@
+--- /home/s1985335/anaconda3/envs/caption_env/lib/python3.7/site-packages/torch/nn/modules/activation.py
++++ /home/s1985335/anaconda3/envs/caption_env/lib/python3.7/site-packages/torch/nn/modules/activation.py
+@@ -28,7 +28,7 @@
+ 
+     Examples::
+ 
+-        >>> m = nn.Softmax()
++        >>> m = nn.Softmax(dim=1)
+         >>> input = torch.randn(2, 3)
+         >>> output = m(input)
+     """
+@@ -43,7 +43,9 @@
+         if not hasattr(self, 'dim'):
+             self.dim = None
+ 
+-    @weak_script_method
+     def forward(self, input):
+         return F.softmax(input, self.dim, _stacklevel=5)
+ 
++    def extra_repr(self):
++        return 'dim={dim}'.format(dim=self.dim)
++

@@ -1,0 +1,10 @@
+--- /home/s1985335/anaconda3/envs/caption_env/lib/python3.7/site-packages/torch/nn/modules/activation.py
++++ /home/s1985335/anaconda3/envs/caption_env/lib/python3.7/site-packages/torch/nn/modules/activation.py
+@@ -18,7 +18,6 @@
+         >>> output = m(input)
+     """
+ 
+-    @weak_script_method
+     def forward(self, input):
+         return torch.tanh(input)
+ 
